@@ -15,15 +15,27 @@
 		})
 	</script>
 	<body>
-	<h1> Title </h1>
+	{% block title %}
+	
+	
 		{% if 'username' in session %}
+
 		<h2>Hello, {{session.username}}</h2>
-		{% else %}
-		<h2>No user selected.</h2>
+		<form action="/logout" method="get" id="logout"></form>
+		<button type="submit" form="logout">Log Out</button>
+				
+		{%else%}
+
+		<h2>Select Customer:</h2>
 		<form action="/login" method="post">
-			<p>User:</p>
+			<p>Customer Name:</p>
 			<input type="text" name="username">
 		</form>
+		{% if attempted == 'True' %}
+		<p>No such Customer record. Please try again.</p>
+		{% endif %}
+
+
 		{% endif %}
 	</body>
 	
