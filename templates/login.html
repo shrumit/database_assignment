@@ -1,0 +1,15 @@
+{% extends "index.html" %}
+
+{% block main %}
+	{% if 'username' in session %}
+	
+		<h2>Hello, {{session.username}}</h2>
+		<form action="/logout" method="get" id="logout"></form>
+		<button type="submit" form="logout">Log Out</button>
+
+	{% else %}
+		<p>NAMBIAR</p>
+		{{super()}}
+		
+	{% endif %}
+{% endblock %}

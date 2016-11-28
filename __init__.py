@@ -5,25 +5,45 @@ app = Flask(__name__)
 app.debug = True
 
 @app.route('/')
-@app.route('/<attempted>')
-def index(attempted=False):
-	print "att", attempted
-	return render_template('index.html', attempted=attempted)
+def index():
+	print "IN INDEX()"
+	attempted = getattr(session, 'attempted', False)
+	if 'username' in session:
+		session['attempted'] = False
+		return redirect(url_for('profile'))
+	else:
+		return render_template('index.html', attempted=attempted)
 
 @app.route('/login', methods=['POST'])
 def login():
-	print '/login username', request.form['username']
-	
 	if findUser(request.form['username']):
 		session['username'] = request.form['username']
-		return redirect(url_for('index'));
+		return redirect(url_for('profile'));
 	else: # user not found
-		return redirect(url_for('index', attempted='True'))
+		session['attempted'] = True
+		return redirect(url_for('index'))
 
 @app.route('/logout')
 def logout():
-	session.pop('username', None)
+	session.clear()
 	return redirect(url_for('index'))
+
+@app.route('/profile')
+def profile():
+	return render_template('profile.html')
+
+@app.route('/search')
+def search():
+	return render_template('search.html')
+
+@app.route('/ratings')
+def ratings():
+	return render_template('ratings.html')
+
+
+# @app.route('/logout')
+# def logout():
+# 	return redirect(url_for('index'))
 
 def findUser(user):
 	if user == 'john': return True

@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.2.3/css/bulma.min.css">
+	<title>{% block title %}{%endblock%}  Shrumit Mehta CS3319 Assignment 3 - Shrumit Mehta</title>
+	<script	src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+	<style>
+	 	html {
+			background: white;
+		}
+	</style>
+
+</head>
+
+<body>
+<section class="hero is-light is-primary">
+	{% if 'username' in session %}
+	<div class="hero-head">
+		<header class="nav nav-right nav-menu container">
+			<span class="nav-item">
+				<p>Welcome, {{session.username}}</p>
+			</span>
+			<span class="nav-item">
+				<a href="/logout" class="button is-warning">Log Out</a>
+			</span>
+		</header>
+	</div>
+	{% endif %}
+	
+	<div class="hero-body has-text-centered">
+	    <div class="container">
+	      <h1 class="title">
+	        Movie Tracker
+	      </h1>
+	      <h2 class="subtitle">
+	        CS 3319 Assignment 3
+	      </h2>
+	    </div>
+	</div>
+	<div class="hero-foot">
+		<nav class="tabs is-boxed">
+		  <div class="nav-left container">
+			<ul>
+				{% block nav %}{% endblock %}
+			</ul>
+		  </div>
+		</nav>
+	</div>
+</section>
+
+<div class="container section">
+	{% block main %}{% endblock %}
+</div>
+</body>
+</html>
