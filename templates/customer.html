@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block nav %}
+<li {% block active_profile %}{% endblock %}><a href="/customer/profile">My Profile</a></li>
+<li {% block active_search %}{% endblock %}><a href="/customer/search">Search Shows</a></li>
+<li {% block active_ratings %}{% endblock %}><a href="/customer/ratings">Ratings</a></li>
+{% endblock %}
+
+{% block hero_message %}
+Welcome, {{session.username}}!
+{% endblock %}

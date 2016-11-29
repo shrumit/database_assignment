@@ -1,18 +1,25 @@
 {% extends "base.html" %}
 
 {% block main %}
-	<div class="columns">
-		<div class="column is-4 is-offset-4">
-			<form action="/login" method="post">
-				<label class="label">Username:</label>
-				<input class="input" type="text" name="username">
-			</form>
-			<p>{{session.attempted}}</p>
-			{% if attempted == True %}
-			<span class="help is-danger">No such user found.</span>
-			{% endif %}
-		</div>
+<div class="columns">
+	<div class="column is-4 is-offset-4">
+		
+		<form class="box" action="/login" method="post">
+			<label class="label">Customer Email:</label>
+			<input class="input" type="text" name="username">
+			<input class="button" type="submit" value="Submit">
+		</form>
+
+		<!-- {% if attempted == True %}
+		<span class="help is-danger">No such user found.</span>
+		{% endif %} -->
+		
+		<form class="box" action="/login_backend" method="post">
+			<input class="button" type="submit" value="Staff Log In">
+		</form>
+		
 	</div>
-	
+</div>
+
 
 {% endblock %}

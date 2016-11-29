@@ -7,20 +7,21 @@
 	<title>{% block title %}{%endblock%}  Shrumit Mehta CS3319 Assignment 3 - Shrumit Mehta</title>
 	<script	src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 	<style>
-	 	html {
-			background: white;
+		html {
+		background: white;
 		}
 	</style>
 
 </head>
 
 <body>
-<section class="hero is-light is-primary">
+
+	<section class="hero is-primary">
 	{% if 'username' in session %}
 	<div class="hero-head">
 		<header class="nav nav-right nav-menu container">
 			<span class="nav-item">
-				<p>Welcome, {{session.username}}</p>
+				<p>{% block hero_message %}{% endblock %}</p>
 			</span>
 			<span class="nav-item">
 				<a href="/logout" class="button is-warning">Log Out</a>
@@ -28,30 +29,32 @@
 		</header>
 	</div>
 	{% endif %}
-	
+
 	<div class="hero-body has-text-centered">
-	    <div class="container">
-	      <h1 class="title">
-	        Movie Tracker
-	      </h1>
-	      <h2 class="subtitle">
-	        CS 3319 Assignment 3
-	      </h2>
-	    </div>
+		<div class="container">
+			<h1 class="title">
+			Movie Tracker
+			</h1>
+			<h2 class="subtitle">
+			CS 3319 Assignment 3
+			</h2>
+		</div>
 	</div>
+
 	<div class="hero-foot">
 		<nav class="tabs is-boxed">
-		  <div class="nav-left container">
-			<ul>
+			<div class="nav-left container">
+				<ul>
 				{% block nav %}{% endblock %}
-			</ul>
-		  </div>
+				</ul>
+			</div>
 		</nav>
 	</div>
-</section>
 
-<div class="container section">
+	</section>
+
+	<div class="container section">
 	{% block main %}{% endblock %}
-</div>
+	</div>
 </body>
 </html>
