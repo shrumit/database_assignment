@@ -1,18 +1,18 @@
 {% extends "backend.html" %}
 
-{% block active_rooms %}class="is-active"{% endblock %}
+{% block active_genres %}class="is-active"{% endblock %}
 
 {% block main %}
 
-<h1 class="title">Rooms</h2>
+<h1 class="title">Genre</h2>
 	
-{% if 'room_message' in session %}
+{% if 'genre_message' in session %}
 	<article class="message is-info">
 		<div class="message-header">
 			Latest Action
 		</div>
 		<div class="message-body">
-			{{ session.room_message }}
+			{{ session.genre_message }}
 		</div>
 	</article>
 {% endif %}
@@ -20,8 +20,8 @@
 <table class="table">
 	<thead>
 		<tr>
-			<th>Room Number</th>
-			<th>Capacity</th>
+			<th>Genre</th>
+			<th>Movie</th>
 			<th>Delete</th>
 			<th>Modify</th>
 	</thead>
@@ -31,19 +31,19 @@
 			<td>{{row.0}}</td>
 			<td>{{row.1}}</td>
 			<td>
-				<form action="/backend/rooms/delete" method="post">
+				<form action="/backend/genres/delete" method="post">
 					<button class="button" name="submit" type="submit" value={{row.0}}>Delete</button>
 				</form>
 			</td>
 			<td>
-				<button class="button modify" data-id={{row.0}} data-capacity="{{row.1}}">Modify</button>
+				<button class="button modify" data-genre={{row.0}} data-movie="{{row.1}}">Modify</button>
 			</td>
 		</tr>
 		{% endfor %}
 		<tr>
-			<form action="/backend/rooms/add" method="post">
-				<td><input class="input" type="text" name="id"></td>
-				<td><input class="input" type="text" name="capacity"></td>
+			<form action="/backend/genres/add" method="post">
+				<td><input class="input" type="text" name="genre"></td>
+				<td><input class="input" type="text" name="movie"></td>
 				<td><input class="button" type="submit" value="Add"></td>
 			</form>
 		</tr>
@@ -58,11 +58,11 @@
       <button class="delete modal-cancel"></button>
     </header>
     <section class="modal-card-body">
-		<form class="column is-4 is-offset-4" action="/backend/rooms/modify" method="post">
-			<label class="label">Room Number (cannot change)</label>
-			<input id="modal-id" class="input control" type="text" name="id" readonly>
-			<label class="label">Capacity</label>
-			<input id="modal-capacity" class="input control" type="text" name="capacity">
+		<form class="column is-4 is-offset-4" action="/backend/genres/modify" method="post">
+			<label class="label">Genre</label>
+			<input id="modal-genre" class="input control" type="text" name="genre">
+			<label class="label">Movie</label>
+			<input id="modal-movie" class="input control" type="text" name="movie">
 			<input class="button" type="submit" value="Modify">
 		</form>
     </section>
@@ -72,8 +72,8 @@
 <script>
 $(document).ready(function(){
 	$('.modify').click(function(){
-		$('#modal-id').val($(this).attr("data-id"));
-		$('#modal-capacity').val($(this).attr("data-capacity"));
+		$('#modal-genre').val($(this).attr("data-genre"));
+		$('#modal-movie').val($(this).attr("data-movie"));
 		$('.modal').addClass('is-active')
 	})
 	

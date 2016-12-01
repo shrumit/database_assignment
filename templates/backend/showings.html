@@ -3,5 +3,104 @@
 {% block active_showings %}class="is-active"{% endblock %}
 
 {% block main %}
+
 <h1 class="title">Showings</h2>
+	
+{% if 'showing_message' in session %}
+	<article class="message is-info">
+		<div class="message-header">
+			Latest Action
+		</div>
+		<div class="message-body">
+			{{ session.showing_message }}
+		</div>
+	</article>
+{% endif %}
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Date and Time</th>
+			<th>Movie #</th>
+			<th>Room #</th>
+			<th>Price</th>
+			<th>Delete</th>
+			<th>Modify</th>
+	</thead>
+	<tbody>
+		{% for row in data %}
+		<tr>
+			<td>{{row.0}}</td>
+			<td>{{row.1}}</td>
+			<td>{{row.2}}</td>
+			<td>{{row.3}}</td>
+			<td>{{row.4}}</td>
+			<td>
+				<form action="/backend/showings/delete" method="post">
+					<button class="button" name="submit" type="submit" value={{row.0}}>Delete</button>
+				</form>
+			</td>
+			<td>
+				<button class="button modify" data-id={{row.0}} data-datetime={{row.1}} data-movie={{row.2}} data-room={{row.3}} data-price={{row.4}}>Modify</button>
+			</td>
+		</tr>
+		{% endfor %}
+		<tr>
+			<form action="/backend/showings/add" method="post">
+				<!-- <td><input class="input" type="text" name="id"></td> -->
+				<td>NEW</td>
+				<td><input class="input" type="text" name="datetime"></td>
+				<td><input class="input" type="text" name="movie"></td>
+				<td><input class="input" type="text" name="room"></td>
+				<td><input class="input" type="text" name="price"></td>
+				<td><input class="button" type="submit" value="Add"></td>
+			</form>
+		</tr>
+	</tbody>
+</table>
+
+<div class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Modify</p>
+      <button class="delete modal-cancel"></button>
+    </header>
+    <section class="modal-card-body">
+		<form class="column is-4 is-offset-4" action="/backend/showings/modify" method="post">
+			<label class="label">ID (cannot change)</label>
+			<input id="modal-id" class="input control" type="text" name="id" readonly>
+			<label class="label">DateTime</label>
+			<input id="modal-datetime" class="input control" type="text" name="datetime">
+			<label class="label">Movie</label>
+			<input id="modal-movie" class="input control" type="text" name="movie">
+			<label class="label">Room</label>
+			<input id="modal-room" class="input control" type="text" name="room">
+			<label class="label">Price</label>
+			<input id="modal-price" class="input control" type="text" name="price">
+
+			<input class="button" type="submit" value="Modify">
+		</form>
+    </section>
+  </div>
+</div>
+
+<script>
+$(document).ready(function(){
+	$('.modify').click(function(){
+		$('#modal-id').val($(this).attr("data-id"));
+		$('#modal-datetime').val($(this).attr("data-datetime"));
+		$('#modal-movie').val($(this).attr("data-movie"));
+		$('#modal-room').val($(this).attr("data-room"));
+		$('#modal-price').val($(this).attr("data-price"));
+		$('.modal').addClass('is-active')
+	})
+	
+	$('.modal-cancel').click(function(){
+		$('.modal').removeClass('is-active')
+	})
+})
+</script>
+
 {% endblock %}

@@ -3,5 +3,104 @@
 {% block active_customers %}class="is-active"{% endblock %}
 
 {% block main %}
-<h1 class="title">Customers</h2>
+
+<h1 class="title">Customer</h2>
+	
+{% if 'customer_message' in session %}
+	<article class="message is-info">
+		<div class="message-header">
+			Latest Action
+		</div>
+		<div class="message-body">
+			{{ session.customer_message }}
+		</div>
+	</article>
+{% endif %}
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>First Name</th>
+			<th>Last Name</th>
+			<th>Email</th>
+			<th>Sex</th>
+			<th>Delete</th>
+			<th>Modify</th>
+	</thead>
+	<tbody>
+		{% for row in data %}
+		<tr>
+			<td>{{row.0}}</td>
+			<td>{{row.1}}</td>
+			<td>{{row.2}}</td>
+			<td>{{row.3}}</td>
+			<td>{{row.4}}</td>
+			<td>
+				<form action="/backend/customers/delete" method="post">
+					<button class="button" name="submit" type="submit" value={{row.0}}>Delete</button>
+				</form>
+			</td>
+			<td>
+				<button class="button modify" data-id={{row.0}} data-first={{row.1}} data-last={{row.2}} data-email={{row.3}} data-sex={{row.4}}>Modify</button>
+			</td>
+		</tr>
+		{% endfor %}
+		<tr>
+			<form action="/backend/customers/add" method="post">
+				<!-- <td><input class="input" type="text" name="id"></td> -->
+				<td>NEW</td>
+				<td><input class="input" type="text" name="first"></td>
+				<td><input class="input" type="text" name="last"></td>
+				<td><input class="input" type="text" name="email"></td>
+				<td><input class="input" type="text" name="sex"></td>
+				<td><input class="button" type="submit" value="Add"></td>
+			</form>
+		</tr>
+	</tbody>
+</table>
+
+<div class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Modify</p>
+      <button class="delete modal-cancel"></button>
+    </header>
+    <section class="modal-card-body">
+		<form class="column is-4 is-offset-4" action="/backend/customers/modify" method="post">
+			<label class="label">ID (cannot change)</label>
+			<input id="modal-id" class="input control" type="text" name="id" readonly>
+			<label class="label">First Name</label>
+			<input id="modal-first" class="input control" type="text" name="first">
+			<label class="label">Last Name</label>
+			<input id="modal-last" class="input control" type="text" name="last">
+			<label class="label">Email</label>
+			<input id="modal-email" class="input control" type="text" name="email">
+			<label class="label">Sex</label>
+			<input id="modal-sex" class="input control" type="text" name="sex">
+
+			<input class="button" type="submit" value="Modify">
+		</form>
+    </section>
+  </div>
+</div>
+
+<script>
+$(document).ready(function(){
+	$('.modify').click(function(){
+		$('#modal-id').val($(this).attr("data-id"));
+		$('#modal-first').val($(this).attr("data-first"));
+		$('#modal-last').val($(this).attr("data-last"));
+		$('#modal-email').val($(this).attr("data-email"));
+		$('#modal-sex').val($(this).attr("data-sex"));
+		$('.modal').addClass('is-active')
+	})
+	
+	$('.modal-cancel').click(function(){
+		$('.modal').removeClass('is-active')
+	})
+})
+</script>
+
 {% endblock %}
