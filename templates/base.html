@@ -17,7 +17,7 @@
 <body>
 
 	<section class="hero is-primary">
-	{% if 'username' in session %}
+	{% if 'username' in session or 'backend' in session %}
 	<div class="hero-head">
 		<header class="nav nav-right nav-menu container">
 			<span class="nav-item">

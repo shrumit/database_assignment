@@ -6,13 +6,10 @@
 		
 		<form class="box" action="/login" method="post">
 			<label class="label">Customer Email:</label>
-			<input class="input" type="text" name="username">
+			<input class="input" type="text" name="username" value={{ username }}>
 			<input class="button" type="submit" value="Submit">
+			<span class="help is-danger">{{ error }}</span>
 		</form>
-
-		<!-- {% if attempted == True %}
-		<span class="help is-danger">No such user found.</span>
-		{% endif %} -->
 		
 		<form class="box" action="/login_backend" method="post">
 			<input class="button" type="submit" value="Staff Log In">
