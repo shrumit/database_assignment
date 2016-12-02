@@ -2,6 +2,25 @@
 
 {% block active_profile %}class="is-active"{% endblock %}
 
+
 {% block main %}
-<h1 class="title">Profile</h2>
+<h1 class="title">My Profile</h2>
+<table class="table">
+	<tr>
+		<td><strong>First Name</strong></td>
+		<td>{{ data.1 }}</td>
+	</tr>
+	<tr>
+		<td><strong>Last Name</strong></td>
+		<td>{{ data.2 }}</td>
+	</tr>
+	<tr>
+		<td><strong>Email</strong></td>
+		<td>{{ data.3 }}</td>
+	</tr>
+	<tr>
+		<td><strong>Sex</strong></td>
+		<td>{{ data.4 }}</td>
+	</tr>
+</div>
 {% endblock %}

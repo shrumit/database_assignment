@@ -4,4 +4,65 @@
 
 {% block main %}
 <h1 class="title">Ratings</h2>
+<table class="table">
+	<thead>
+		<tr>
+			<th>Movie</th>
+			<th>Showing #</th>
+			<th>Showing DateTime</th>
+			<th>Rating Given</th>
+			<th>Modify Rating</th>
+	</thead>
+	<tbody>
+		{% for row in data %}
+		<tr>
+			<td>{{row.0}}</td>
+			<td>{{row.1}}</td>
+			<td>{{row.2}}</td>
+			<td>{{row.3}}</td>
+			<td>
+				<button class="button modify" data-showingid={{row.1}} data-customerid={{row.4}} data-rating={{row.3}}>Modify</button>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<div class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Modify</p>
+      <button class="delete modal-cancel"></button>
+    </header>
+    <section class="modal-card-body">
+		<form class="column is-4 is-offset-4" action="/customer/ratings/modify" method="post">
+			<label class="label">Showing ID</label>
+			<input id="modal-showingid" class="input control" type="text" name="showingid" readonly>
+			<label class="label">Customer ID</label>
+			<input id="modal-customerid" class="input control" type="text" name="customerid" readonly>
+
+			<label class="label">Rating</label>
+			<input id="modal-rating" class="input control" type="text" name="rating">
+			<input class="button" type="submit" value="Modify">
+		</form>
+    </section>
+  </div>
+</div>
+
+<script>
+$(document).ready(function(){
+	$('.modify').click(function(){
+		$('#modal-showingid').val($(this).attr("data-showingid"));
+		$('#modal-customerid').val($(this).attr("data-customerid"));
+		$('#modal-rating').val($(this).attr("data-rating"));
+		$('.modal').addClass('is-active')
+	})
+	
+	$('.modal-cancel').click(function(){
+		$('.modal').removeClass('is-active')
+	})
+})
+</script>
+
 {% endblock %}

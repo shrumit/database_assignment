@@ -3,5 +3,114 @@
 {% block active_search %}class="is-active"{% endblock %}
 
 {% block main %}
-<h1 class="title">Search</h2>
+<h1 class="title">Search and Buy Shows</h2>
+<div class="box">
+	<form class="form" method="get">
+		<label class="label">Movie Name</label>
+		<input class="input control" type="text" name="title">
+		
+		<label class="label">Genre</label>
+		<span class="select control">
+			<select name="genre">
+				<option></option>
+				{% for ge in genre %}
+				<option>{{ge.0}}</option>
+				{% endfor %}
+			</select>
+		</span>
+
+		<label class="label">Date Range</label>
+		<span class="select control">
+			<select name="start">
+				<option></option>
+				{% for da in dates %}
+				<option>{{da.0}}</option>
+				{% endfor %}
+			</select>
+		</span>
+		<span class="select control">
+			<select name="end">
+				<option></option>
+				{% for da in dates %}
+				<option>{{da.0}}</option>
+				{% endfor %}
+			</select>
+		</span>
+		
+		<label class="label">Hide Full	</label>
+		<input class="control" type="checkbox" name="seats" value="val">
+		<br>
+		<input class="button control" type="submit" value="Apply Filter">
+		
+	</form>
+</div>
+	
+<table class="table">
+	<thead>
+		<tr>
+			<th>Movie</th>
+			<th>Showing Time</th>
+			<th>Price</th>
+			<th>Seats Left</th>
+			<th>Buy</th>
+	</thead>
+	<tbody>
+		{% for row in data if (row.5 > 0) or (seats == 0) %}
+		
+		<tr>
+			<td>{{row.0}}</td>
+			<td>{{row.1}}</td>
+			<td>{{row.2}}</td>
+			<td>{{row.5}}</td>
+			<td>
+				<button class="button modify" data-showingid={{row.3}} data-customerid={{row.4}} data-movie="{{row.0}}" data-showingtime="{{row.1}}">Buy</button>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<div class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Purchase</p>
+      <button class="delete modal-cancel"></button>
+    </header>
+    <section class="modal-card-body">
+		<form class="column is-4 is-offset-4" action="/customer/search/buy" method="post">
+			<label class="label">Showing ID</label>
+			<input id="modal-showingid" class="input control" type="text" name="showingid" readonly>
+			
+			<label class="label">Customer ID</label>
+			<input id="modal-customerid" class="input control" type="text" name="customerid" readonly>
+
+			<label class="label">Movie</label>
+			<input id="modal-movie" class="input control" type="text" name="movie" readonly>
+
+			<label class="label">Showing Time</label>
+			<input id="modal-showingtime" class="input control" type="text" name="showingtime" readonly>
+
+			<input class="button" type="submit" value="Confirm">
+		</form>
+    </section>
+  </div>
+</div>
+
+<script>
+$(document).ready(function(){
+	$('.modify').click(function(){
+		$('#modal-showingid').val($(this).attr("data-showingid"));
+		$('#modal-customerid').val($(this).attr("data-customerid"));
+		$('#modal-movie').val($(this).attr("data-movie"));
+		$('#modal-showingtime').val($(this).attr("data-showingtime"));
+		
+		$('.modal').addClass('is-active')
+	})
+	
+	$('.modal-cancel').click(function(){
+		$('.modal').removeClass('is-active')
+	})
+})
+</script>
 {% endblock %}
