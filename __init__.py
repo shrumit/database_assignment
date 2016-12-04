@@ -145,6 +145,22 @@ def search():
 
 @app.route('/customer/search/buy', methods=['POST'])
 def search_buy():
+	
+	cnx = mysql.connector.connect(**config)
+	cursor = cnx.cursor()
+	query = ("insert into Attend (Customer_idCustomer, Showing_idShowing) values (%s,%s)")
+	data = (request.form['customerid'], request.form['showingid'])
+	try:
+		cursor.execute(query, data)
+		cnx.commit()
+		session['search_message'] = "Buy Show Successful!"
+	except mysql.connector.Error as err:
+		if err.errno == 1062:
+			session['search_message'] = "Buy Show Unsuccessful: You have already purchased a ticket for this show"
+		else: session['search_message'] = "Buy Show Unsuccessful: %s" % err.msg
+	finally:
+		cnx.close()
+		
 	return redirect(url_for('search'))
 
 @app.route('/customer/ratings')
@@ -201,11 +217,11 @@ def movies_add():
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		cnx.close()
 		session['movie_message'] = "Add Movie Successful: %s, %s" % (data)
 	except mysql.connector.Error as err:
 		session['movie_message'] = "Add Movie Unsuccessful: %s" % err.msg
-
+	finally:
+		cnx.close()
 	return redirect(url_for('movies'))
 	
 @app.route('/backend/movies/delete', methods=['POST'])
@@ -217,11 +233,11 @@ def movies_delete():
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		cnx.close()
 		session['movie_message'] = "Delete Movie Successful"
 	except mysql.connector.Error as err:
 		session['movie_message'] = "Delete Movie Unsuccessful: %s" % err.msg
-	
+	finally:
+		cnx.close()
 	return redirect(url_for('movies'))
 
 @app.route('/backend/movies/modify', methods=['POST'])
@@ -233,10 +249,11 @@ def movies_modify():
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		cnx.close()
 		session['movie_message'] = "Modify Movie Successful"
 	except mysql.connector.Error as err:
 		session['movie_message'] = "Modify Movie Unsuccessful: %s" % err.msg
+	finally:
+		cnx.close()
 	return redirect(url_for('movies'))
 #--
 
@@ -264,10 +281,11 @@ def genres_add():
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		cnx.close()
 		session['genre_message'] = "Add Movie Successful: %s, %s" % (data)
 	except mysql.connector.Error as err:
 		session['genre_message'] = "Add Movie Unsuccessful: %s" % err.msg
+	finally:
+		cnx.close()
 	return redirect(url_for('genres'))
 	
 @app.route('/backend/genres/delete', methods=['POST'])
@@ -279,11 +297,11 @@ def genres_delete():
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		cnx.close()
 		session['genre_message'] = "Delete Genre Successful"
 	except mysql.connector.Error as err:
 		session['genre_message'] = "Delete Genre Unsuccessful: %s" % err.msg
-	
+	finally:
+		cnx.close()
 	return redirect(url_for('genre'))
 
 @app.route('/backend/genres/modify', methods=['POST'])
@@ -295,10 +313,11 @@ def genres_modify():
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		cnx.close()
 		session['genre_message'] = "Modify Genre Successful"
 	except mysql.connector.Error as err:
 		session['genre_message'] = "Modify Genre Unsuccessful: %s" % err.msg
+	finally:
+		cnx.close()
 	
 	return redirect(url_for('genres'))
 # -
@@ -326,10 +345,12 @@ def rooms_add():
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		cnx.close()
 		session['room_message'] = "Add Room Successful: %s, %s" % (data)
 	except mysql.connector.Error as err:
 		session['room_message'] = "Add Room Unsuccessful: %s" % err.msg
+	finally:
+		cnx.close()
+
 	return redirect(url_for('rooms'))
 
 @app.route('/backend/rooms/delete', methods=['POST'])
@@ -341,10 +362,11 @@ def rooms_delete():
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		cnx.close()
 		session['room_message'] = "Delete Room Successful"
 	except mysql.connector.Error as err:
 		session['room_message'] = "Delete Room Unsuccessful: %s" % err.msg
+	finally:
+		cnx.close()
 
 	return redirect(url_for('rooms'))
 
@@ -358,10 +380,12 @@ def rooms_modify():
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		cnx.close()
 		session['room_message'] = "Modify Rooms Successful"
 	except mysql.connector.Error as err:
 		session['room_message'] = "Modify Rooms Unsuccessful: %s" % err.msg
+	finally:
+		cnx.close()
+
 	return redirect(url_for('rooms'))
 
 # -
@@ -389,10 +413,11 @@ def showings_add():
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		cnx.close()
 		session['showing_message'] = "Add Showing Successful"
 	except mysql.connector.Error as err:
 		session['showing_message'] = "Add Showing Unsuccessful: %s" % err.msg
+	finally:
+		cnx.close()
 	return redirect(url_for('showings'))
 
 @app.route('/backend/showings/delete', methods=['POST'])
@@ -404,11 +429,11 @@ def showings_delete():
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		cnx.close()
 		session['showing_message'] = "Delete Showing Successful"
 	except mysql.connector.Error as err:
 		session['showing_message'] = "Delete Showing Unsuccessful: %s" % err.msg
-
+	finally:
+		cnx.close()
 	return redirect(url_for('showings'))
 
 @app.route('/backend/showings/modify', methods=['POST'])
@@ -420,10 +445,11 @@ def showings_modify():
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		cnx.close()
 		session['showing_message'] = "Modify Showings Successful"
 	except mysql.connector.Error as err:
 		session['showing_message'] = "Modify Showings Unsuccessful: %s" % err.msg
+	finally:
+		cnx.close()
 	return redirect(url_for('showings'))
 # -
 
@@ -450,10 +476,12 @@ def customers_add():
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		cnx.close()
 		session['customer_message'] = "Add Customer Successful"
 	except mysql.connector.Error as err:
 		session['customer_message'] = "Add Customer Unsuccessful: %s" % err.msg
+	finally:
+		cnx.close()
+
 	return redirect(url_for('customers'))
 
 @app.route('/backend/customers/delete', methods=['POST'])
@@ -465,10 +493,12 @@ def customers_delete():
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		cnx.close()
 		session['customer_message'] = "Delete Customer Successful"
 	except mysql.connector.Error as err:
 		session['showing_message'] = "Delete Customer Unsuccessful: %s" % err.msg
+	finally:
+		cnx.close()
+
 	return redirect(url_for('customers'))
 
 @app.route('/backend/customers/modify', methods=['POST'])
@@ -480,10 +510,11 @@ def customers_modify():
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		cnx.close()
 		session['customer_message'] = "Modify Customer Successful"
 	except mysql.connector.Error as err:
 		session['customer_message'] = "Modify Customer Unsuccessful: %s" % err.msg
+	finally:
+		cnx.close()
 	return redirect(url_for('customers'))
 
 # -

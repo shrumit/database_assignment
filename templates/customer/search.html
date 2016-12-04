@@ -2,6 +2,18 @@
 
 {% block active_search %}class="is-active"{% endblock %}
 
+{% if 'search_message' in session %}
+	<article class="message is-info">
+		<div class="message-header">
+			Latest Action
+		</div>
+		<div class="message-body">
+			{{ session.search_message }}
+		</div>
+	</article>
+{% endif %}
+
+
 {% block main %}
 <h1 class="title">Search and Buy Shows</h2>
 <div class="box">
@@ -63,7 +75,11 @@
 			<td>{{row.2}}</td>
 			<td>{{row.5}}</td>
 			<td>
+				{% if (row.5 > 0) %}
 				<button class="button modify" data-showingid={{row.3}} data-customerid={{row.4}} data-movie="{{row.0}}" data-showingtime="{{row.1}}">Buy</button>
+				{% else %}
+				No seats
+				{% endif %}
 			</td>
 		</tr>
 		{% endfor %}
