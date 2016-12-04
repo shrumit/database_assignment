@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session, g
-from config import config
+from config import config, secret_key
 import mysql.connector
 
 app = Flask(__name__)
 app.debug = True
-app.secret_key = 'asdf'
+app.secret_key = secret_key
 
 from backend import backend_page
 from customer import customer_page
