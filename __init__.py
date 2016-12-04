@@ -143,6 +143,75 @@ def search():
 	cnx.close()
 	return render_template('customer/search.html', data=result, genre=genre, seats=seats, dates=dates)
 
+@app.route('/customer/search_vulnerable', methods=['GET'])
+def search_vulnerable():
+	genre = request.args.get('genre')
+	title = request.args.get('title')
+	seats = request.args.get('seats')
+	start = request.args.get('start')
+	end = request.args.get('end')
+
+	if genre is None: genre = ""
+	if title is None: title = ""
+	if start == "": start = None
+	if end == "": end = None
+	
+	if seats is None:
+		seats = 0
+	else: seats = 1
+	
+	genre = "%" + genre + "%"
+	title = "%" + title + "%"
+	print "START", start
+	print "END", end
+
+	# Get show data
+	cnx = mysql.connector.connect(**config)
+	cursor = cnx.cursor()
+	query = ("select distinct m.MovieName, s.ShowingDateTime, s.TicketPrice, s.idShowing, c.idCustomer from Showing s"
+			" join Movie m on s.Movie_idMovie=m.idMovie"
+			" join Genre g on g.Movie_idMovie=m.idMovie"
+			" join Customer c"
+			" where c.EmailAddress=%s and g.Genre like %s and m.MovieName like '" + title + "'"
+			" and (s.ShowingDateTime >= %s or %s is null)"
+			" and (s.ShowingDateTime <= %s or %s is null)")
+	
+	data=(session['username'], genre, start, start, end, end)
+	cursor.execute(query, data)
+	result = cursor.fetchall()
+	
+	# Get empty seats
+	for i in range(len(result)):
+		data = (result[i][3],)
+		query=("select Capacity  from Showing join TheatreRoom on TheatreRoom_RoomNumber=RoomNumber where idShowing=%s")
+		cursor.execute(query,data)
+		capacity = cursor.fetchall()[0][0]
+		query=("select count(*) from Showing"
+		" join TheatreRoom on TheatreRoom_RoomNumber=RoomNumber"
+		" join Attend on Showing_idShowing=idShowing"
+		" where idShowing=%s group by Capacity")
+		cursor.execute(query,data)
+		occupied = cursor.fetchall()
+		if (len(occupied) == 0):
+			occupied = 0
+		else:
+			occupied = occupied[0][0]
+			
+		remaining = capacity - occupied
+		result[i] = result[i] + (remaining,)
+		print result[i]
+	# get list of genres
+	query = ("select distinct Genre from Genre")
+	cursor.execute(query)
+	genre = cursor.fetchall()
+	# get date range
+	query = ("select distinct ShowingDateTime from Showing order by ShowingDateTime")
+	cursor.execute(query)
+	dates = cursor.fetchall()
+	cnx.close()
+	return render_template('customer/search_vulnerable.html', data=result, genre=genre, seats=seats, dates=dates)
+
+
 @app.route('/customer/search/buy', methods=['POST'])
 def search_buy():
 	
@@ -263,27 +332,35 @@ def movies_modify():
 def genres():
 	cnx = mysql.connector.connect(**config)
 	cursor = cnx.cursor()
-	query = ("select Genre, MovieName from Genre join Movie on Movie_idMovie=idMovie order by Genre")
+	query = ("select Genre, MovieName, idMovie from Genre join Movie on Movie_idMovie=idMovie order by Genre")
 	cursor.execute(query)
 	result = cursor.fetchall()
+	query = ("select distinct MovieName from Movie order by MovieName")
+	cursor.execute(query)
+	movie=cursor.fetchall()
 	cnx.close()
-	return render_template('backend/genres.html', data=result)
+	return render_template('backend/genres.html', data=result, movie=movie)
 
 @app.route('/backend/genres/add', methods=['POST'])
 def genres_add():
-	cnx = mysql.connector.connect(**config)
-	cursor = cnx.cursor()
-	query = ("insert into Movie(MovieName, MovieYear) values (%s, %s)")
-	data = (request.form['name'], request.form['year'])
+	data = (request.form['moviename'],)
 	if data[0] == "":
 		session['genre_message'] = "Add Movie Unsuccessful: Non-null field cannot be empty."
 		return redirect(url_for('genres'))
+
+	cnx = mysql.connector.connect(**config)
+	cursor = cnx.cursor()
+	query = ("select idMovie from Movie where MovieName=%s")
+	cursor.execute(query, data)
+	result = cursor.fetchall()
+	data = (result[0][0], request.form['genre'])
+	query = ("insert into Genre(Movie_idMovie, Genre) values (%s, %s)")
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
-		session['genre_message'] = "Add Movie Successful: %s, %s" % (data)
+		session['genre_message'] = "Add Genre Successful"
 	except mysql.connector.Error as err:
-		session['genre_message'] = "Add Movie Unsuccessful: %s" % err.msg
+		session['genre_message'] = "Add Genre Unsuccessful: %s" % err.msg
 	finally:
 		cnx.close()
 	return redirect(url_for('genres'))
@@ -292,8 +369,9 @@ def genres_add():
 def genres_delete():
 	cnx = mysql.connector.connect(**config)
 	cursor = cnx.cursor()
-	query = ("delete from Movie where idMovie=%s")
-	data = (request.form['submit'],)
+	query = ("delete from Genre where Movie_idMovie=%s and Genre=%s")
+	data = (request.form['movie'],request.form['genre'])
+	print data
 	try:
 		cursor.execute(query, data)
 		cnx.commit()
@@ -302,24 +380,24 @@ def genres_delete():
 		session['genre_message'] = "Delete Genre Unsuccessful: %s" % err.msg
 	finally:
 		cnx.close()
-	return redirect(url_for('genre'))
-
-@app.route('/backend/genres/modify', methods=['POST'])
-def genres_modify():
-	cnx = mysql.connector.connect(**config)
-	cursor = cnx.cursor()
-	query = ("update Movie set MovieName=%s, MovieYear=%s where idMovie=%s")
-	data = (request.form['name'],request.form['year'],request.form['id'])
-	try:
-		cursor.execute(query, data)
-		cnx.commit()
-		session['genre_message'] = "Modify Genre Successful"
-	except mysql.connector.Error as err:
-		session['genre_message'] = "Modify Genre Unsuccessful: %s" % err.msg
-	finally:
-		cnx.close()
-	
 	return redirect(url_for('genres'))
+
+# @app.route('/backend/genres/modify', methods=['POST'])
+# def genres_modify():
+# 	cnx = mysql.connector.connect(**config)
+# 	cursor = cnx.cursor()
+# 	query = ("update Genre set MovieName=%s, MovieYear=%s where idMovie=%s")
+# 	data = (request.form['genre'],request.form['movie'])
+# 	try:
+# 		cursor.execute(query, data)
+# 		cnx.commit()
+# 		session['genre_message'] = "Modify Genre Successful"
+# 	except mysql.connector.Error as err:
+# 		session['genre_message'] = "Modify Genre Unsuccessful: %s" % err.msg
+# 	finally:
+# 		cnx.close()
+#
+# 	return redirect(url_for('genres'))
 # -
 
 # ROOMS
@@ -495,7 +573,7 @@ def customers_delete():
 		cnx.commit()
 		session['customer_message'] = "Delete Customer Successful"
 	except mysql.connector.Error as err:
-		session['showing_message'] = "Delete Customer Unsuccessful: %s" % err.msg
+		session['customer_message'] = "Delete Customer Unsuccessful: %s" % err.msg
 	finally:
 		cnx.close()
 

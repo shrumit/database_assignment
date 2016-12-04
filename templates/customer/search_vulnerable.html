@@ -1,6 +1,6 @@
 {% extends "customer.html" %}
 
-{% block active_search %}class="is-active"{% endblock %}
+{% block active_search_vulnerable %}class="is-active"{% endblock %}
 
 {% if 'search_message' in session %}
 	<article class="message is-info">
@@ -15,7 +15,7 @@
 
 
 {% block main %}
-<h2 class="title">Search and Buy Shows</h2>
+<h1 class="title">Search and Buy Shows</h2>
 <div class="box">
 	<form class="form" method="get">
 		<label class="label">Movie Name</label>

@@ -4,7 +4,8 @@
 
 {% block main %}
 
-<h1 class="title">Genre</h2>
+<h2 class="title">Genre</h2>
+<p>Because all columns in the table form the primary key, to modify a row you should delete it and then add a new one.</p>
 	
 {% if 'genre_message' in session %}
 	<article class="message is-info">
@@ -23,7 +24,7 @@
 			<th>Genre</th>
 			<th>Movie</th>
 			<th>Delete</th>
-			<th>Modify</th>
+			<!-- <th>Modify</th> -->
 	</thead>
 	<tbody>
 		{% for row in data %}
@@ -31,26 +32,32 @@
 			<td>{{row.0}}</td>
 			<td>{{row.1}}</td>
 			<td>
-				<form action="/backend/genres/delete" method="post">
-					<button class="button" name="submit" type="submit" value={{row.0}}>Delete</button>
-				</form>
+				<button class="button g_delete" data-genre={{row.0}} data-moviename="{{row.1}}" data-movie={{row.2}}>Delete</button>
 			</td>
-			<td>
+			<!-- <td>
 				<button class="button modify" data-genre={{row.0}} data-movie="{{row.1}}">Modify</button>
-			</td>
+			</td> -->
 		</tr>
 		{% endfor %}
 		<tr>
 			<form action="/backend/genres/add" method="post">
 				<td><input class="input" type="text" name="genre"></td>
-				<td><input class="input" type="text" name="movie"></td>
+				<td>
+					<span class="select control">
+					<select name="moviename">
+						{% for mo in movie %}
+						<option>{{mo.0}}</option>
+						{% endfor %}
+					</select>
+					</span>
+				</td>
 				<td><input class="button" type="submit" value="Add"></td>
 			</form>
 		</tr>
 	</tbody>
 </table>
 
-<div class="modal">
+<!-- <div class="modal" id="modal_modify">
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
@@ -60,10 +67,32 @@
     <section class="modal-card-body">
 		<form class="column is-4 is-offset-4" action="/backend/genres/modify" method="post">
 			<label class="label">Genre</label>
-			<input id="modal-genre" class="input control" type="text" name="genre">
+			<input class="input control modal-genre" type="text" name="genre">
 			<label class="label">Movie</label>
-			<input id="modal-movie" class="input control" type="text" name="movie">
+			<input class="input control modal-movie" type="text" name="movie" readonly>
 			<input class="button" type="submit" value="Modify">
+		</form>
+    </section>
+  </div>
+</div> -->
+
+<div class="modal" id="modal_delete">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Delete</p>
+      <button class="delete modal-cancel"></button>
+    </header>
+    <section class="modal-card-body">
+		<form class="column is-4 is-offset-4" action="/backend/genres/delete" method="post">
+			<label class="label">Genre</label>
+			<input class="input control modal-genre" type="text" name="genre" readonly>
+			<label class="label">MovieId</label>
+			<input class="input control modal-movie" type="text" name="movie" readonly>
+			<label class="label">Movie Name</label>
+			<input class="input control modal-moviename" type="text" name="moviename" readonly>
+			<input class="button" type="submit" value="Delete">
+			
 		</form>
     </section>
   </div>
@@ -71,10 +100,17 @@
 
 <script>
 $(document).ready(function(){
-	$('.modify').click(function(){
-		$('#modal-genre').val($(this).attr("data-genre"));
-		$('#modal-movie').val($(this).attr("data-movie"));
-		$('.modal').addClass('is-active')
+	// $('.modify').click(function(){
+	// 	$('.modal-genre').val($(this).attr("data-genre"));
+	// 	$('.modal-movie').val($(this).attr("data-movie"));
+	// 	$('#modal_modify').addClass('is-active')
+	// })
+	
+	$('.g_delete').click(function(){
+		$('.modal-genre').val($(this).attr("data-genre"));
+		$('.modal-movie').val($(this).attr("data-movie"));
+		$('.modal-moviename').val($(this).attr("data-moviename"));
+		$('#modal_delete').addClass('is-active')
 	})
 	
 	$('.modal-cancel').click(function(){
